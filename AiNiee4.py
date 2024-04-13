@@ -10922,7 +10922,7 @@ class Widget_prompy_engineering(QFrame):#提示词工程界面
 
         # 设置窗口显示的内容是最外层容器
         self.setLayout(container)
-        container.setSpacing(20) # 设置布局内控件的间距为28
+        container.setSpacing(5) # 设置布局内控件的间距为28
         container.setContentsMargins(50, 70, 50, 30) # 设置布局的边距, 也就是外边框距离，分别为左、上、右、下
 
         # 把各个组添加到容器中
