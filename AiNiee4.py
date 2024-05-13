@@ -31,6 +31,7 @@ import sys
 import multiprocessing
 import concurrent.futures
 import shutil
+import zipfile
 
 import tiktoken_ext  #必须导入这两个库，否则打包后无法运行
 from tiktoken_ext import openai_public
@@ -534,8 +535,24 @@ class Api_Requester():
 
 
 
-                    # 提取回复的文本内容
-                    response_content = response.choices[0].message.content 
+                    # 尝试提取回复的文本内容
+                    try:
+                        response_content = response.choices[0].message.content 
+                    #抛出错误信息
+                    except Exception as e:
+                        print("\033[1;31mError:\033[0m 提取文本时出现问题！！！运行错误信息如下")
+                        print(f"Error: {e}\n")
+                        print("接口返回的错误信息如下")
+                        print(response)
+                        #处理完毕，再次进行请求
+                        
+                        #请求错误计次
+                        request_errors_count = request_errors_count + 1
+                        #如果错误次数过多，就取消任务
+                        if request_errors_count >= 4 :
+                            print("\033[1;31m[ERROR]\033[0m 请求发生错误次数过多，该线程取消任务！")
+                            break
+                        continue
 
 
                     print('\n' )
@@ -874,7 +891,7 @@ class Api_Requester():
 
 
 
-                    # 提取回复的文本内容
+                    # 尝试提取回复的文本内容
                     try:
                         response_content = response.text
                     #抛出错误信息
@@ -1203,9 +1220,25 @@ class Api_Requester():
 
 
 
-                    # 提取回复的文本内容
-                    response_content = response.choices[0].message.content 
 
+                    # 尝试提取回复的文本内容
+                    try:
+                        response_content = response.choices[0].message.content 
+                    #抛出错误信息
+                    except Exception as e:
+                        print("\033[1;31mError:\033[0m 提取文本时出现问题！！！运行错误信息如下")
+                        print(f"Error: {e}\n")
+                        print("接口返回的错误信息如下")
+                        print(response)
+                        #处理完毕，再次进行请求
+                        
+                        #请求错误计次
+                        request_errors_count = request_errors_count + 1
+                        #如果错误次数过多，就取消任务
+                        if request_errors_count >= 4 :
+                            print("\033[1;31m[ERROR]\033[0m 请求发生错误次数过多，该线程取消任务！")
+                            break
+                        continue
 
                     print('\n' )
                     print("[INFO] 已成功接受到AI的回复-----------------------")
@@ -1539,9 +1572,25 @@ class Api_Requester():
                         completion_tokens_used = 0
 
 
-                    # 提取回复的文本内容（anthropic）
-                    response_content = response.content[0].text 
 
+                    # 尝试提取回复的文本内容
+                    try:
+                        response_content = response.content[0].text 
+                    #抛出错误信息
+                    except Exception as e:
+                        print("\033[1;31mError:\033[0m 提取文本时出现问题！！！运行错误信息如下")
+                        print(f"Error: {e}\n")
+                        print("接口返回的错误信息如下")
+                        print(response)
+                        #处理完毕，再次进行请求
+                        
+                        #请求错误计次
+                        request_errors_count = request_errors_count + 1
+                        #如果错误次数过多，就取消任务
+                        if request_errors_count >= 4 :
+                            print("\033[1;31m[ERROR]\033[0m 请求发生错误次数过多，该线程取消任务！")
+                            break
+                        continue
 
 
                     print('\n' )
@@ -1864,9 +1913,25 @@ class Api_Requester():
                         completion_tokens_used = 0
 
 
-                    # 提取回复的文本内容（anthropic）
-                    response_content = response.text 
 
+                    # 尝试提取回复的文本内容
+                    try:
+                        response_content = response.text 
+                    #抛出错误信息
+                    except Exception as e:
+                        print("\033[1;31mError:\033[0m 提取文本时出现问题！！！运行错误信息如下")
+                        print(f"Error: {e}\n")
+                        print("接口返回的错误信息如下")
+                        print(response)
+                        #处理完毕，再次进行请求
+                        
+                        #请求错误计次
+                        request_errors_count = request_errors_count + 1
+                        #如果错误次数过多，就取消任务
+                        if request_errors_count >= 4 :
+                            print("\033[1;31m[ERROR]\033[0m 请求发生错误次数过多，该线程取消任务！")
+                            break
+                        continue
 
 
                     print('\n' )
@@ -1981,7 +2046,7 @@ class Api_Requester():
 
         #构建系统提示词
         if configurator.model_type != "Sakura-v0.9":
-            system_prompt ={"role": "system","content": "你是一个轻小说翻译模型，可以流畅通顺地以日本轻小说的风格将日文翻译成简体中文，并联系上下文正确使用人称代词，注意不要擅自添加原文中没有的代词，也不要擅自增加或减少换行。" }
+            system_prompt ={"role": "system","content": "你是一个轻小说翻译模型，可以流畅通顺地使用给定的术语表以日本轻小说的风格将日文翻译成简体中文，并联系上下文正确使用人称代词，注意不要混淆使役态和被动态的主语和宾语，不要擅自添加原文中没有的代词，也不要擅自增加或减少换行。" }
         else:
             system_prompt ={"role": "system","content": "你是一个轻小说翻译模型，可以流畅通顺地以日本轻小说的风格将日文翻译成简体中文，并联系上下文正确使用人称代词，不擅自添加原文中没有的代词。" }
         messages.append(system_prompt)
@@ -2027,11 +2092,14 @@ class Api_Requester():
 
         #构建需要翻译的文本
         if converted_list:
-            user_prompt = "根据以下术语表：\n" + gpt_dict_raw_text + "\n" + "将下面的日文文本根据上述术语表的对应关系和注释翻译成中文：" + source_text_str_raw
-            Original_text = {"role":"user","content": user_prompt}   
+            user_prompt = "根据以下术语表（可以为空）：\n" + gpt_dict_raw_text + "\n\n" + "将下面的日文文本根据上述术语表的对应关系和备注翻译成中文：" + source_text_str_raw
         else:
-            user_prompt = "将下面的日文文本翻译成中文：" + source_text_str_raw
-            Original_text = {"role":"user","content": user_prompt}
+            if configurator.model_type != "Sakura-v0.9":
+                user_prompt = "根据以下术语表（可以为空）：\n\n\n" + "将下面的日文文本根据上述术语表的对应关系和备注翻译成中文：" + source_text_str_raw
+            else:
+                user_prompt = "将下面的日文文本翻译成中文：" + source_text_str_raw
+
+        Original_text = {"role":"user","content": user_prompt}
 
 
         messages.append(Original_text)
@@ -2340,8 +2408,19 @@ class Response_Parser():
         try:
             response_dict = json.loads(input_str) 
             return response_dict
+        except :
+            # 对格式进行修复       
+            input_str = Response_Parser.repair_double_quotes(self,input_str)
+            input_str = Response_Parser.repair_double_quotes_2(self,input_str)  
+            input_str = Response_Parser.repair_double_quotes_3(self,input_str)       
+
+
+        # 再次尝试直接转换为json字典
+        try:
+            response_dict = json.loads(input_str) 
+            return response_dict
         except :       
-            pass       
+            pass
 
 
         # 尝试正则提取
@@ -2386,6 +2465,92 @@ class Response_Parser():
             return json.dumps(ret_json, ensure_ascii=False)
 
 
+    # 修复value前面的双引号
+    def repair_double_quotes(self,text):
+        # 消除文本中的空格
+        text = text.replace(" ", "")
+        # 正则表达式匹配双引号后跟冒号，并捕获第三个字符
+        pattern = r'[\"]:(.)'
+        # 使用finditer来找到所有匹配项
+        matches = re.finditer(pattern, text)
+        # 存储所有修改的位置
+        modifications = [(match.start(1), match.group(1)) for match in matches]
+
+        # 从后往前替换文本，这样不会影响后续匹配的位置
+        for start, char in reversed(modifications):
+            if char != '"':
+                text = text[:start] + '"' + text[start:]
+
+        return text
+
+    # 修复value后面的双引号
+    def repair_double_quotes_2(self,text):
+        # 消除文本中的空格
+        text = text.replace(" ", "")
+
+        # 正则表达式匹配逗号后面跟换行符（可选）,再跟双引号的模式
+        pattern = r',(?:\n)?\"'
+        matches = re.finditer(pattern, text)
+        result = []
+
+        last_end = 0
+        for match in matches:
+            # 获取逗号前的字符
+            quote_position = match.start()
+            before_quote = text[quote_position - 1]
+            
+            # 检查逗号前的字符是否是双引号
+            if before_quote == '"':
+                # 如果是双引号，将这一段文本加入到结果中
+                result.append(text[last_end:quote_position])
+            else:
+                # 如果不是双引号，将前一个字符换成'"'
+                result.append(text[last_end:quote_position - 1] + '"')
+            
+            # 更新最后结束的位置
+            last_end = quote_position
+
+        # 添加剩余的文本
+        result.append(text[last_end:])
+
+        # 将所有片段拼接起来
+        return ''.join(result)
+
+    # 修复大括号前面的双引号
+    def repair_double_quotes_3(self,text):
+        # 消除文本中的空格
+        text = text.replace(" ", "")
+
+        # 正则表达式匹配逗号后面紧跟双引号的模式
+        pattern = r'(?:\n)?}'
+        matches = re.finditer(pattern, text)
+        result = []
+
+        last_end = 0
+        for match in matches:
+            # 获取逗号前的字符
+            quote_position = match.start()
+            before_quote = text[quote_position - 1]
+            
+            # 检查逗号前的字符是否是双引号
+            if before_quote == '"':
+                # 如果是双引号，将这一段文本加入到结果中
+                result.append(text[last_end:quote_position])
+            else:
+                # 如果不是双引号，将前一个字符换成'"'
+                result.append(text[last_end:quote_position - 1] + '"')
+            
+            # 更新最后结束的位置
+            last_end = quote_position
+
+        # 添加剩余的文本
+        result.append(text[last_end:])
+
+        # 将所有片段拼接起来
+        return ''.join(result)
+
+
+
     # 检查回复内容是否存在问题
     def check_response_content(self,response_str,response_dict,source_text_dict):
         # 存储检查结果
@@ -2411,7 +2576,7 @@ class Response_Parser():
         else:
             check_result = False
             # 存储错误内容
-            error_content = "AI回复内容文本行数与原来数量不符合,将进行重新翻译"
+            error_content = "提取到的文本行数与原来数量不符合,将进行重新翻译"
             return check_result,error_content
 
 
@@ -2460,12 +2625,16 @@ class Response_Parser():
         
 
     # 检查回复内容的文本行数
-    def check_text_line_count(self,source_text_dict,response_dict):
-        if(len(source_text_dict)  ==  len(response_dict) ):    
-            return True
-        else:                                            
-            return False
-        
+    def check_text_line_count(self,source_text_dict,response_dict): 
+        """
+        检查字典d中是否包含从'0'到'(N-1)'的字符串键
+
+        :param d: 输入的字典
+        :param N: 数字N
+        :return: 如果字典包含从'0'到'(N-1)'的所有字符串键，则返回True，否则返回False
+        """
+        N = len(source_text_dict) 
+        return all(str(key) in response_dict for key in range(N))
 
     # 检查翻译内容是否有空值
     def check_empty_response(self,response_dict):
@@ -2482,30 +2651,17 @@ class Response_Parser():
         
 
     # 模型退化检测，高频语气词
-    def model_degradation_detection(self,input_string):
-        # 使用正则表达式匹配中日语字符
-        japanese_chars = re.findall(r'[\u3040-\u309F\u30A0-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]', input_string)
+    def model_degradation_detection(self, s, count=80):
+        """
+        检查字符串中是否存在任何字符连续出现指定次数。
 
-        # 统计中日语字符的数量
-        char_count = {}
-        for char in japanese_chars:
-            char_count[char] = char_count.get(char, 0) + 1
-        # 输出字符数量
-        for char, count in char_count.items():
-            if count >= 90:
+        :param s: 输入的字符串
+        :param count: 需要检查的连续次数，默认为80
+        :return: 如果存在字符连续出现指定次数，则返回False，否则返回True
+        """
+        for i in range(len(s) - count + 1):
+            if len(set(s[i:i+count])) == 1:
                 return False
-                #print(f"中日语字符 '{char}' 出现了 {count} 次一次。")
-        
-        # 统计英文字母的数量
-        english_chars = re.findall(r'[a-zA-Z]', input_string)
-        english_char_count = {}
-        for char in english_chars:
-            english_char_count[char] = english_char_count.get(char, 0) + 1
-        # 检查是否有英文字母出现超过500次
-        for count in english_char_count.values():
-            if count > 400:
-                return False
-            
         return True
     
 
@@ -3157,8 +3313,6 @@ class Configurator():
         self.openai_top_p = 1.0             
         self.openai_presence_penalty = 0.0  
         self.openai_frequency_penalty = 0.0 
-
-
 
 
     # 配置翻译平台信息
@@ -4206,11 +4360,39 @@ Output the translation in JSON format:
                 if "op_model_type_openai" in config_dict:
                     #Window.Widget_Proxy.A_settings.comboBox_model_openai.setPlaceholderText(config_dict["op_model_type_openai"])
                     #Window.Widget_Proxy.A_settings.comboBox_model_openai.setCurrentIndex(-1)
-                    Window.Widget_Proxy.A_settings.comboBox_model_openai.setCurrentText(config_dict["op_model_type_openai"])
+
+                    # 获取配置文件中指定的模型类型
+                    model_type = config_dict["op_model_type_openai"]
+                    # 检查模型类型是否已经存在于下拉列表中
+                    existing_index = Window.Widget_Proxy.A_settings.comboBox_model_openai.findText(model_type)
+                    # 如果模型类型不存在，则添加到下拉列表中
+                    if existing_index == -1:
+                        Window.Widget_Proxy.A_settings.comboBox_model_openai.addItem(model_type)
+                    # 设置当前文本为配置文件中指定的模型类型
+                    Window.Widget_Proxy.A_settings.comboBox_model_openai.setCurrentText(model_type)
+
                 if "op_model_type_anthropic" in config_dict:
-                    Window.Widget_Proxy.A_settings.comboBox_model_anthropic.setCurrentText(config_dict["op_model_type_anthropic"])
+                    # 获取配置文件中指定的模型类型
+                    model_type = config_dict["op_model_type_anthropic"]
+                    # 检查模型类型是否已经存在于下拉列表中
+                    existing_index = Window.Widget_Proxy.A_settings.comboBox_model_anthropic.findText(model_type)
+                    # 如果模型类型不存在，则添加到下拉列表中
+                    if existing_index == -1:
+                        Window.Widget_Proxy.A_settings.comboBox_model_anthropic.addItem(model_type)
+                    # 设置当前文本为配置文件中指定的模型类型
+                    Window.Widget_Proxy.A_settings.comboBox_model_anthropic.setCurrentText(model_type)
+
                 if "op_model_type_zhipu" in config_dict:
-                    Window.Widget_Proxy.A_settings.comboBox_model_zhipu.setCurrentText(config_dict["op_model_type_zhipu"])
+                    # 获取配置文件中指定的模型类型
+                    model_type = config_dict["op_model_type_zhipu"]
+                    # 检查模型类型是否已经存在于下拉列表中
+                    existing_index = Window.Widget_Proxy.A_settings.comboBox_model_zhipu.findText(model_type)
+                    # 如果模型类型不存在，则添加到下拉列表中
+                    if existing_index == -1:
+                        Window.Widget_Proxy.A_settings.comboBox_model_zhipu.addItem(model_type)
+                    # 设置当前文本为配置文件中指定的模型类型
+                    Window.Widget_Proxy.A_settings.comboBox_model_zhipu.setCurrentText(model_type)
+                    
                 if "op_API_key_str" in config_dict:
                     Window.Widget_Proxy.A_settings.TextEdit_apikey.setText(config_dict["op_API_key_str"])
                 if "op_proxy_port" in config_dict:
@@ -5690,7 +5872,7 @@ class File_Reader():
         return json_data_list
 
 
-    # 读取文件夹中树形结构Epub文件
+    # 读取文件夹中树形结构Epub文件(写成一坨屎了)
     def read_epub_files (self,folder_path):
 
         # 创建缓存数据，并生成文件头信息
@@ -5728,35 +5910,92 @@ class File_Reader():
                             # 使用BeautifulSoup解析HTML
                             soup = BeautifulSoup(content, 'html.parser')
                             
+
+
+                            # 提取这个页面里所有的p标签
+                            p_tags = soup.find_all('p')
+                            # 存储含有ruby标签的原文字典
+                            ruby_dic = {}      
+
+                            # 遍历每个p标签，并提取文本内容
+                            for p in p_tags:
+                                # 检查<p>标签中是否包含<ruby>标签
+                                if p.find('ruby'):
+
+                                    # 创建一个空字符串来存储当前行的文本
+                                    line_text_rb = ""
+                                    line_text_rbrt = ""            
+                                    line_text_ruby = ""
+                                    # 遍历p标签中的所有子节点
+                                    for child in p.children:
+                                        # 如果是ruby元素，则处理rb和rt标签
+                                        if child.name == 'ruby':
+                                            line_text_ruby += "<ruby>"
+                                            for ruby_child in child.children:
+                                                if ruby_child.name == 'rb':
+                                                    line_text_rb += ruby_child.get_text()
+                                                    line_text_rbrt += ruby_child.get_text()
+                                                    line_text_ruby += f"<rb>{ruby_child.get_text()}</rb>"
+                                                elif ruby_child.name == 'rt':
+                                                    line_text_rbrt += f"({ruby_child.get_text()})"
+                                                    line_text_ruby += f"<rt>{ruby_child.get_text()}</rt>"
+                                            line_text_ruby += "</ruby>"
+                                        # 如果不是ruby元素，直接添加文本
+                                        elif child.name is None:
+                                            line_text_rb += child
+                                            line_text_rbrt += child                    
+                                            line_text_ruby += child
+                                    # 去除头部空格
+                                    line_text_rb = line_text_rb.lstrip()
+                                    line_text_rbrt = line_text_rbrt.lstrip()
+                                    line_text_ruby = line_text_ruby.lstrip()
+                                    # 添加到字典里
+                                    ruby_dic[line_text_rb] = {"rbrt": line_text_rbrt, "ruby": line_text_ruby}
+
+
+
+
                             # 提取纯文本
                             text_content = soup.get_text()
-                            
                             # 获取项目的唯一ID
                             item_id = item.get_id()
-
                             # 切行
                             lines = text_content.split('\n')
-
                             # 去除每行前后的空格
                             strip_lines = [line.strip() for line in lines]
-
-
+                            # 录入缓存
                             for j, line in enumerate(strip_lines):
-                                if line.strip() == '': # 跳过空行
+                                # 跳过空行
+                                if line.strip() == '': 
                                     continue
 
-                                # 将数据存储在字典中
-                                json_data_list.append({
-                                    "text_index": i,
-                                    "translation_status": 0,
-                                    "source_text": line,
-                                    "translated_text": line,
-                                    "model": "none",
-                                    "item_id": item_id,
-                                    "storage_path": storage_path,
-                                    "file_name": file_name,
-                                })
-
+                                # 如果文本中含ruby标签的内容
+                                if line in ruby_dic:
+                                    # 将数据存储在字典中
+                                    json_data_list.append({
+                                        "text_index": i,
+                                        "translation_status": 0,
+                                        "source_text": ruby_dic[line]["rbrt"],
+                                        "translated_text": ruby_dic[line]["rbrt"],
+                                        "ruby":ruby_dic[line]["ruby"],
+                                        "model": "none",
+                                        "item_id": item_id,
+                                        "storage_path": storage_path,
+                                        "file_name": file_name,
+                                    })
+                                else:
+                                    # 将数据存储在字典中
+                                    json_data_list.append({
+                                        "text_index": i,
+                                        "translation_status": 0,
+                                        "source_text": line,
+                                        "translated_text": line,
+                                        "ruby":"none",
+                                        "model": "none",
+                                        "item_id": item_id,
+                                        "storage_path": storage_path,
+                                        "file_name": file_name,
+                                    })                                    
                                 # 增加文本索引值
                                 i = i + 1
 
@@ -7029,6 +7268,7 @@ class File_Outputter():
                 text = {'translation_status': item['translation_status'],
                         'source_text': item['source_text'], 
                         'translated_text': item['translated_text'],
+                        'ruby': item['ruby'],
                         "item_id": item['item_id'],}
                 text_dict[file_path].append(text)
 
@@ -7037,6 +7277,7 @@ class File_Outputter():
                 text = {'translation_status': item['translation_status'],
                         'source_text': item['source_text'], 
                         'translated_text': item['translated_text'],
+                        'ruby': item['ruby'],
                         "item_id": item['item_id'],}
                 text_dict[file_path] = [text]
 
@@ -7073,17 +7314,40 @@ class File_Outputter():
             # 加载EPUB文件
             book = epub.read_epub(file_path)
 
+            # 构建解压文件夹路径
+            parent_path = os.path.dirname(file_path)
+            extract_path = os.path.join(parent_path, 'EpubCache')
+
+            # 创建解压文件夹
+            if not os.path.exists(extract_path):
+                os.makedirs(extract_path)
+
+            # 使用zipfile模块打开并解压EPUB文件
+            with zipfile.ZipFile(file_path, 'r') as epub_file:
+                # 提取所有文件
+                epub_file.extractall(extract_path)
 
             # 遍历书籍中的所有内容
             for item in book.get_items():
                 # 检查是否是文本内容
                 if item.get_type() == ebooklib.ITEM_DOCUMENT:
-                    # 获取文本内容并解码
-                    content_html = item.get_content().decode('utf-8')
 
-
-                    # 获取文件的唯一ID
+                    # 获取文件的唯一ID及文件名
                     item_id = item.get_id()
+                    file_name = os.path.basename(item.get_name())
+
+                    # 遍历文件夹中的所有文件,找到该文件，因为上面给的相对路径与epub解压后路径是不准的
+                    for root, dirs, files in os.walk(extract_path):
+                        for filename in files:
+                            # 如果文件名匹配
+                            if filename == file_name:
+                                # 构建完整的文件路径
+                                the_file_path = os.path.join(root, filename)
+
+                    # 打开对应HTML文件
+                    with open(the_file_path, 'r', encoding='utf-8') as file:
+                        # 读取文件内容
+                        content_html = file.read()
 
                     # 遍历缓存数据
                     for content in content_list:
@@ -7093,20 +7357,38 @@ class File_Outputter():
                             original = content['source_text']
                             # 获取翻译后的文本
                             replacement = content['translated_text']
+                            # 获取ruby标签化的文本
+                            ruby = content['ruby']
 
-                            # 使用正则表达式替换第一个匹配项
-                            content_html  = re.sub(original, replacement, content_html, count=1)
+                            if ruby == "none":
+                                # 使用正则表达式替换第一个匹配项
+                                content_html  = re.sub(original, replacement, content_html, count=1)
+                            else:
+                                content_html  = re.sub(ruby, replacement, content_html, count=1)
 
-                    # 将修改后的内容编码并设置为内容
-                    item.set_content(content_html.encode('utf-8'))
-
-            # 保存修改后的EPUB文件
+                    # 写入内容到HTML文件
+                    with open(the_file_path, 'w', encoding='utf-8') as file:
+                        file.write(content_html)
+        
+            # 构建修改后的EPUB文件路径
             modified_epub_file = file_path.rsplit('.', 1)[0] + '_translated.epub'
-            epub.write_epub(modified_epub_file, book, {})
 
+            # 创建ZipFile对象，准备写入压缩文件
+            with zipfile.ZipFile(modified_epub_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                # 遍历文件夹中的所有文件和子文件夹
+                for root, dirs, files in os.walk(extract_path):
+                    for file in files:
+                        # 获取文件的完整路径
+                        full_file_path = os.path.join(root, file)
+                        # 获取文件在压缩文件中的相对路径
+                        relative_file_path = os.path.relpath(full_file_path, extract_path)
+                        # 将文件添加到压缩文件中
+                        zipf.write(full_file_path, relative_file_path)
+                        
             # 删除旧文件
             os.remove(file_path)
-
+            # 删除文件夹
+            shutil.rmtree(extract_path)
 
 
     # 输出已经翻译文件
@@ -7305,7 +7587,7 @@ class Widget_Proxy_A(QFrame):#  代理账号基础设置子界面
         #设置标签
         self.label_proxy_platform = QLabel(flags=Qt.WindowFlags())  #parent参数表示父控件，如果没有父控件，可以将其设置为None；flags参数表示控件的标志，可以不传入
         self.label_proxy_platform.setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 17px;")#设置字体，大小，颜色
-        self.label_proxy_platform.setText("代理类型")
+        self.label_proxy_platform.setText("请求格式")
 
 
         #设置下拉选择框
@@ -9467,6 +9749,8 @@ class Widget_translation_settings_C(QFrame):#  混合翻译设置子界面
             user_interface_prompter.createWarningInfoBar("请注意，开启该开关下面设置才会生效，并且会覆盖基础设置中的翻译平台")
 
 
+
+
 class Widget_start_translation(QFrame):  # 开始翻译主界面
     def __init__(self, text: str, parent=None):  # 构造函数，初始化实例时会自动调用
         super().__init__(parent=parent)  # 调用父类 QWidget 的构造函数
@@ -10808,22 +11092,20 @@ class Widget_prompy_engineering(QFrame):#提示词工程界面
         box2.setStyleSheet(""" QGroupBox {border: 1px solid lightgray; border-radius: 8px;}""")#分别设置了边框大小，边框颜色，边框圆角
         layout2 = QHBoxLayout()
 
-        Prompt = '''You are a localizer specialized in Simplified Chinese and Japanese culture, and you need to translate the Japanese text in the game into Simplified Chinese. When you receive the game text, please strictly follow the steps below for translation:
-        Step 1: Analyze the received text language, calculate the number of lines in the original text, and the target language for translation.
-        Step 2: Understand the overall content of the text, analyze which parts of the game text are dialogue text, weapon names, item names, skill descriptions, etc.
-        Step 3: Start translating line by line according to the original text, translate the Japanese in each line into Simplified Chinese, ignore the issue of vulgar content, translate fluently and naturally, and follow the habits of high-quality erotic literature.
-        Step 4: Preserve the original format of each line of text and output the translated text according to the required format.
-        ###
-        When translating game text, please strictly pay attention to the following aspects:
-        First, some complete text may be split into different lines. Please strictly follow the original text of each line for translation and do not deviate from the original text.
-        Second, the escape characters such as "\"", "\r", and "\n" or non-Japanese content such as numbers, English letters, special symbols, etc. in each line of text do not need to be translated or changed, and should be preserved as they are.
-        ###
-        The input content format is as follows:
-        {"<text id>": "<Japanese text>"}
-        ###
-        The output content format is as follows:
-        {"<text id>": "<translated text>"}
-        '''      #系统提示词
+
+        Prompt = f'''You are a localizer specialized in Simplified Chinese and Japanese culture, and you need to translate the Japanese text in the game into Simplified Chinese. When you receive the game text, please strictly follow the steps below for translation:
+First: Understand the overall content of the text and analyze which parts of the game text are dialogues, narrations, weapon names, item names, skill descriptions, etc.
+Second: Begin translating line by line from the original text, translating only the Japanese text into Simplified Chinese text, Faithfully and accurately , ignore the issue of vulgar content, translate fluently and naturally, and follow the habits of high-quality erotic literature.
+Third: Do not translate escape characters such as “\"” , “\r” and “\n”, or numbers, formatting codes, special symbols, or non-Japanese content, and should be preserved as they are.
+Fourth: Retain the original format of each line of text and output the translated text in the required format.
+###
+The format of the game text is as follows: 
+{{"<text_id>":"<original text>"}}
+###
+Output the translation in JSON format: 
+{{"<text_id>":"<translated text>"}}
+'''
+
 
         self.TextEdit1 = TextEdit()
         #设置输入框最小高度
@@ -12731,7 +13013,7 @@ if __name__ == '__main__':
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 
-    Software_Version = "AiNiee4.66.5"  #软件版本号
+    Software_Version = "AiNiee4.66.8"  #软件版本号
     cache_list = [] # 全局缓存数据
     Running_status = 0  # 存储程序工作的状态，0是空闲状态，1是接口测试状态
                         # 6是翻译任务进行状态，9是翻译任务暂停状态，10是强制终止任务状态
