@@ -15,14 +15,14 @@
 ***
 该款AI翻译工具仅供个人合法用途,任何使用该工具进行直接或者间接非法盈利活动的行为,均不属于授权范围,也不受到任何支持和认可。
 
-* **`交♂交流群`**:  QQ交流群：821624890，备用QQ群：729610150，备用TG群：https://t.me/+JVHbDSGo8SI2Njhl ,
+* **`交♂交流群`**:  QQ交流群(主要)：821624890，备用QQ群：729610150，备用TG群：https://t.me/+JVHbDSGo8SI2Njhl ,
 
 #  工具准备🏕️
 ***
  * **`🟪好用的魔法工具`**:我们**强烈建议**您选择优质稳定的代理工具,不然api接口会频繁报错无法连接或者一直没有回复
  * **`📖文本提取工具`**:[Mtool下载地址](https://afdian.net/a/AdventCirno?tab=feed)  [Translator++下载地址](https://dreamsavior.net/download/)  [SExtractor下载地址](https://github.com/satan53x/SExtractor)
    > 两者免费版本就可以,新人推荐Mtool,如果希望能够自行校正,获得更好的翻译效果,推荐Translator++或者SExtractor
-* **`🤖AI平台账号`**: [OpenAI平台](https://platform.openai.com/)    [GooGle平台](https://makersuite.google.com/app/apikey?hl=zh-cn)  [Cohere平台](https://dashboard.cohere.com/)  [Anthropic平台](https://console.anthropic.com/dashboard)    [Moonshot平台](https://platform.moonshot.cn/console/info)    [智谱平台](https://open.bigmodel.cn/overview)
+* **`🤖AI平台账号`**: [OpenAI平台](https://platform.openai.com/)    [GooGle平台](https://makersuite.google.com/app/apikey?hl=zh-cn)  [Cohere平台](https://dashboard.cohere.com/)  [Anthropic平台](https://console.anthropic.com/dashboard)    [Moonshot平台](https://platform.moonshot.cn/console/info)    [智谱平台](https://open.bigmodel.cn/overview)     [Deepseek平台](https://platform.deepseek.com/usage)
 * **`📡下载地址`**: [AiNiee下载地址](https://github.com/NEKOparapa/AiNiee/releases)
 * **`📺视频教程`**: [Mtool教程](https://www.bilibili.com/video/BV1h6421c7MA)      [T++教程](https://www.bilibili.com/video/BV18c411K7WN?p=2)
 
@@ -54,9 +54,11 @@
 *  代理平台配置示例:
     > <img src="https://raw.githubusercontent.com/NEKOparapa/AiNiee-chatgpt/main/Example%20image/代理账号设置.png" width="600" height="400"><br> 
     
-    >`请求地址`: 填入国内代理平台提供的请求地址,示例：`https://api.openai-sb.com/v1`
+    >`请求地址`: 填入国内代理平台提供的请求地址,示例：`https://api.openai-sb.com` ,不要在后面单带一个`/`
     
-    >`模型选择`: 请自行了解模型之间的区别后再进行更改。<br>
+    >`请求格式`: 根据中转能够支持的请求格式进行选择，一般是openai格式
+
+    >`模型选择`: 可下拉选择，也可以自行填入模型名字<br>
 
     >`API KEY`: 填入国内代理平台给你生成的API KEY<br>
 
@@ -295,7 +297,7 @@
 * ` 多key轮询`
   >如果想使用多个key来分担消耗压力，根据key数量进行加速翻译，请使用同类型账号的key，而且输入时在每个key中间加上英文逗号，不要换行。例如：key1,key2,key3
 
-* ` 多文件翻译`
+* ` 批量文件翻译`
   >把所有文件放在输入文件夹即可
 
 * ` 配置迁移`
@@ -311,7 +313,7 @@
   >当翻译遇到问题时，可以之后更改翻译项目为缓存文件，并在输入文件夹选择该缓存文件所在的文件夹进行继续翻译。当继续翻译Epub小说文件时，还需要把原来的文件和缓存文件放在同一个文件夹里面
   
 * `导出当前任务的已翻译文件`
-  >会将已经翻译好的内容和未翻译的内容导出。mtool项目会分为两个文件，会带有不同的后缀。T++项目会仍然是同一个文件里，已翻译文本的右边会有内容，未翻译的没有。其他项目都会混合在一个文件里。
+  >会将已经翻译好的内容和未翻译的内容导出。mtool项目与Paratranz项目会分为两个文件，会带有不同的后缀。T++项目会仍然是同一个文件里，已翻译文本的右边会有内容，未翻译的没有。其他项目都会混合在一个文件里。
   
 * `提示字典`
   >用来统一名词的翻译，让AI翻译的人名，物品名词，怪物名词，特殊名词能够翻译成你想要的样子。备注信息可写可不写
